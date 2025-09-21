@@ -2,6 +2,10 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, AbstractUser, PermissionsMixin
 from django.core.validators import MinValueValidator, MaxValueValidator, RegexValidator
 from .managers import UserManager
+from django.utils import timezone
+from datetime import timedelta
+import secrets, string
+
 
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -42,3 +46,27 @@ class User(AbstractBaseUser, PermissionsMixin):
         verbose_name = "User"
         verbose_name_plural = "Users"
         ordering = ['-id']
+
+
+
+class OTP(models.Model):
+    phone = models.CharField(max_length=11)
+    code = models.CharField(max_length=6)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
+    attempts = models.PositiveSmallIntegerField(default=0)
+
+    @staticmethod
+    def gen_code():
+        return ''.join(secrets.choice(string.digits) for _ in range(6))
+
+    @staticmethod
+    def ttl():
+        return timezone.now() + timedelta(minutes=2)
+
+    def expired(self):
+        return timezone.now() > self.expires_at
+
+    class Meta:
+        indexes = [models.Index(fields=["phone", "-id"])]
+

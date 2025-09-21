@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from .models import User
+from .models import User, OTP
+from django.utils import timezone
 
 
 @admin.register(User)
@@ -25,3 +26,16 @@ class UserAdmin(BaseUserAdmin):
     )
 
     filter_horizontal = ("groups", "user_permissions")
+
+
+@admin.register(OTP)
+class OTPAdmin(admin.ModelAdmin):
+    list_display = ("phone", "code", "created_at", "expires_at", "is_expired", "attempts")
+    list_filter = ("created_at", "expires_at")
+    search_fields = ("phone", "code")
+    readonly_fields = ("created_at",)
+    ordering = ("-id",)
+
+    @admin.display(boolean=True, description="Expired?")
+    def is_expired(self, obj: OTP):
+        return timezone.now() > obj.expires_at
