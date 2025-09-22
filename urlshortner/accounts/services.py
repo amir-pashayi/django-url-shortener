@@ -1,7 +1,16 @@
-import os
-from kavenegar import KavenegarAPI
+from django.conf import settings
+from kavenegar import *
 
-def send_otp_code(phone, code):
-    api = KavenegarAPI(os.environ["KAVENEGAR_API_KEY"])
-    params = {'receptor': phone, 'template': 'django-ec', 'token': code, 'type': 'sms'}
-    return api.verify_lookup(params)
+def send_otp_code(phone_number, code):
+	try:
+		api = KavenegarAPI(settings.KAVENEGAR_API_KEY)
+		params = {
+			'receptor': phone_number,
+            'template': 'django-ec',
+            'token': code,
+		}
+		api.verify_lookup(params)
+	except APIException as e:
+		print(e)
+	except HTTPException as e:
+		print(e)

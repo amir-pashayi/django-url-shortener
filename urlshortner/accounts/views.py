@@ -20,6 +20,6 @@ class LoginView(View):
         if form.is_valid():
             phone = form.cleaned_data['phone']
             otp = OTP.objects.create(phone=phone, code=OTP.generate_otp(), created_at=timezone.now())
-            # send_otp_code(phone, otp)
+            print(send_otp_code(phone, otp.code))
             return redirect('home')
         return render(request, self.template_name, {'form': form})
