@@ -22,7 +22,6 @@ class User(AbstractBaseUser, PermissionsMixin):
             RegexValidator(regex=r'^09\d{9}$', message="شماره موبایل باید با 09 شروع شده و 11 رقم باشد.")
         ]
     )
-    username = models.CharField(max_length=100, unique=True)
     full_name = models.CharField(max_length=100)
     email = models.EmailField(unique=True, blank=True, null=True)
     bio = models.TextField(blank=True, null=True)
@@ -35,7 +34,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
 
     USERNAME_FIELD = 'phone'
-    REQUIRED_FIELDS = ['username']
+    REQUIRED_FIELDS = []
 
 
     def __str__(self):
