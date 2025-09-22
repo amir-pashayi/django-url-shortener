@@ -126,3 +126,4 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = "accounts.User"
 
 KAVENEGAR_API_KEY = os.getenv('KAVENEGAR_API_KEY')
+OTP_RESEND_COOLDOWN = 120
