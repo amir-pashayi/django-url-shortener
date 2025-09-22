@@ -3,8 +3,8 @@ from django.contrib.auth.models import AbstractBaseUser, AbstractUser, Permissio
 from django.core.validators import MinValueValidator, MaxValueValidator, RegexValidator
 from .managers import UserManager
 from django.utils import timezone
-from datetime import timedelta
-import secrets, string
+import random
+from django.conf import settings
 
 
 
@@ -50,23 +50,15 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 
 class OTP(models.Model):
-    phone = models.CharField(max_length=11)
+    phone = models.CharField(max_length=11, unique=True)
     code = models.CharField(max_length=6)
     created_at = models.DateTimeField(auto_now_add=True)
-    expires_at = models.DateTimeField()
-    attempts = models.PositiveSmallIntegerField(default=0)
+
+    def is_valid(self):
+        expiration_time = getattr(settings, "OTP_EXPIRATION_TIME", 300)
+        return (timezone.now() - self.created_at).total_seconds() < expiration_time
 
     @staticmethod
-    def gen_code():
-        return ''.join(secrets.choice(string.digits) for _ in range(6))
-
-    @staticmethod
-    def ttl():
-        return timezone.now() + timedelta(minutes=2)
-
-    def expired(self):
-        return timezone.now() > self.expires_at
-
-    class Meta:
-        indexes = [models.Index(fields=["phone", "-id"])]
+    def generate_otp():
+        return str(random.randint(100000, 999999))
 

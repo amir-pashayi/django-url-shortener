@@ -30,12 +30,8 @@ class UserAdmin(BaseUserAdmin):
 
 @admin.register(OTP)
 class OTPAdmin(admin.ModelAdmin):
-    list_display = ("phone", "code", "created_at", "expires_at", "is_expired", "attempts")
-    list_filter = ("created_at", "expires_at")
+    list_display = ("phone", "code", "created_at")
+    list_filter = ("created_at",)
     search_fields = ("phone", "code")
     readonly_fields = ("created_at",)
     ordering = ("-id",)
-
-    @admin.display(boolean=True, description="Expired?")
-    def is_expired(self, obj: OTP):
-        return timezone.now() > obj.expires_at

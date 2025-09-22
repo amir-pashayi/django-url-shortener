@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Login & Register{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-5">
+    <div class="card shadow-sm border-0">
+      <div class="card-body p-4">
+        <h4 class="text-center mb-3">Login / Register</h4>
+        <p class="text-muted text-center mb-4">
+          Please Enter a valid phone number.
+        </p>
+
+        <form method="post" novalidate>
+          {% csrf_token %}
+
+          <div class="mb-3">
+            <input
+              type="text"
+              name="phone"
+              maxlength="11"
+              class="form-control {% if form.phone.errors %}is-invalid{% endif %}"
+              id="phone"
+              placeholder="09123456789"
+              value="{{ form.phone.value|default_if_none:'' }}">
+            {% if form.phone.errors %}
+              <div class="invalid-feedback">
+                {{ form.phone.errors.0 }}
+              </div>
+            {% endif %}
+          </div>
+
+          <button type="submit" class="btn btn-primary w-100">
+            Send code
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
