@@ -2,13 +2,12 @@ from django.contrib.auth.models import BaseUserManager
 
 
 class UserManager(BaseUserManager):
-    def create_user(self, phone, username, age=18, password=None, **extra_fields):
+    def create_user(self, phone, age=1, password=None, **extra_fields):
         if not phone:
             raise ValueError('phone is required')
-        if not username:
-            raise ValueError('username is required')
 
-        user = self.model(phone=phone, username=username, age=age, **extra_fields)
+
+        user = self.model(phone=phone, age=age, **extra_fields)
         if password:
             user.set_password(password)
         else:
@@ -16,9 +15,9 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, phone, username, age=18, password=None, **extra_fields):
+    def create_superuser(self, phone, age=1, password=None, **extra_fields):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
 
-        user = self.create_user(phone, username, age, password, **extra_fields)
+        user = self.create_user(phone, age, password, **extra_fields)
         return user

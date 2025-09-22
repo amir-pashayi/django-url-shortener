@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Verify Code{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-5">
+    <div class="card shadow-sm border-0">
+      <div class="card-body p-4">
+        <h4 class="text-center mb-3">Verify your code</h4>
+
+        <form method="post" novalidate>
+          {% csrf_token %}
+
+          <div class="mb-3">
+            <input
+              type="text"
+              name="otp"
+              maxlength="6"
+              class="form-control {% if form.otp.errors %}is-invalid{% endif %}"
+              id="{{ form.otp.id_for_label }}"
+              placeholder="Enter 6-digit code"
+              value="{{ form.otp.value|default_if_none:'' }}">
+            {% if form.otp.errors %}
+              <div class="invalid-feedback">
+                {{ form.otp.errors.0 }}
+              </div>
+            {% endif %}
+          </div>
+
+          <button type="submit" class="btn btn-success w-100">
+            Verify
+          </button>
+        </form>
+
+        <div class="text-center mt-3">
+          <small class="text-muted">
+            Didn't receive the code? <a href="{% url 'login' %}">Resend</a>
+          </small>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
