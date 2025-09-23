@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block title %}Complete Registration{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-8 col-lg-6">
+    <div class="card shadow-sm border-0">
+      <div class="card-body p-4">
+        <h4 class="text-center mb-3">Complete your registration</h4>
+        <p class="text-muted text-center mb-4">
+          Please fill in your profile information.
+        </p>
+
+        {% if form.non_field_errors %}
+          <div class="alert alert-danger">
+            {{ form.non_field_errors }}
+          </div>
+        {% endif %}
+
+        <form method="post" novalidate>
+          {% csrf_token %}
+
+          <!-- full_name -->
+          <div class="mb-3">
+            <label for="{{ form.full_name.id_for_label }}" class="form-label">Full name</label>
+            <input
+              type="text"
+              name="{{ form.full_name.name }}"
+              id="{{ form.full_name.id_for_label }}"
+              class="form-control {% if form.full_name.errors %}is-invalid{% endif %}"
+              value="{{ form.full_name.value|default_if_none:'' }}">
+            {% if form.full_name.errors %}
+              <div class="invalid-feedback">{{ form.full_name.errors.0 }}</div>
+            {% endif %}
+          </div>
+
+          <!-- email -->
+          <div class="mb-3">
+            <label for="{{ form.email.id_for_label }}" class="form-label">Email</label>
+            <input
+              type="email"
+              name="{{ form.email.name }}"
+              id="{{ form.email.id_for_label }}"
+              class="form-control {% if form.email.errors %}is-invalid{% endif %}"
+              value="{{ form.email.value|default_if_none:'' }}">
+            {% if form.email.errors %}
+              <div class="invalid-feedback">{{ form.email.errors.0 }}</div>
+            {% endif %}
+          </div>
+
+          <!-- bio -->
+          <div class="mb-3">
+            <label for="{{ form.bio.id_for_label }}" class="form-label">Bio</label>
+            <textarea
+              name="{{ form.bio.name }}"
+              id="{{ form.bio.id_for_label }}"
+              class="form-control {% if form.bio.errors %}is-invalid{% endif %}"
+              rows="4"
+              placeholder="Tell us a bit about yourself...">{{ form.bio.value|default_if_none:'' }}</textarea>
+            {% if form.bio.errors %}
+              <div class="invalid-feedback">{{ form.bio.errors.0 }}</div>
+            {% endif %}
+          </div>
+
+          <!-- age -->
+          <div class="mb-3">
+            <label for="{{ form.age.id_for_label }}" class="form-label">Age</label>
+            <input
+              type="number"
+              name="{{ form.age.name }}"
+              id="{{ form.age.id_for_label }}"
+              class="form-control {% if form.age.errors %}is-invalid{% endif %}"
+              value="{{ form.age.value|default_if_none:'' }}">
+            {% if form.age.errors %}
+              <div class="invalid-feedback">{{ form.age.errors.0 }}</div>
+            {% endif %}
+          </div>
+
+          <!-- gender -->
+          <div class="mb-3">
+            <label for="{{ form.gender.id_for_label }}" class="form-label">Gender</label>
+            <select
+              name="{{ form.gender.name }}"
+              id="{{ form.gender.id_for_label }}"
+              class="form-select {% if form.gender.errors %}is-invalid{% endif %}">
+              {% for val,label in form.gender.field.choices %}
+                <option value="{{ val }}" {% if form.gender.value == val %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
+            {% if form.gender.errors %}
+              <div class="invalid-feedback">{{ form.gender.errors.0 }}</div>
+            {% endif %}
+          </div>
+
+          <button type="submit" class="btn btn-primary w-100">Save and continue</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

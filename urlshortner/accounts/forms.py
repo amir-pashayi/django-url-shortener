@@ -1,5 +1,6 @@
 from django import forms
 from django.core.exceptions import ValidationError
+from .models import User
 
 
 class UserLoginRegisterForm(forms.Form):
@@ -19,15 +20,14 @@ class OtpVerifyForm(forms.Form):
     otp = forms.CharField(max_length=6, required=True)
 
 
-class UserRegisterForm(forms.Form):
-    GENDER_CHOICES = [
-        ('male', 'Male'),
-        ('female', 'Female'),
-    ]
 
-    username = forms.CharField(max_length=100, required=True)
-    full_name = forms.CharField(max_length=100)
-    email = forms.EmailField()
-    bio = forms.CharField(widget=forms.Textarea, required=False)
-    age = forms.IntegerField(required=False)
-    gender = forms.ChoiceField(choices=GENDER_CHOICES)
+class UserRegisterForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ["full_name", "email", "bio", "age", "gender"]
+        widgets = {"bio": forms.Textarea(attrs={"rows": 4})}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["bio"].required = False
+        self.fields["age"].required = False

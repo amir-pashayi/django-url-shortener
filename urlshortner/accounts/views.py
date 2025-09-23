@@ -1,11 +1,12 @@
 from django.shortcuts import render,redirect
 from django.views import View
-from .forms import UserLoginRegisterForm, OtpVerifyForm
+from .forms import UserLoginRegisterForm, OtpVerifyForm, UserRegisterForm
 from .models import OTP, User
 from django.utils import timezone
 from .services import send_otp_code
 from django.conf import settings
 from django.contrib.auth import login, logout
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 class LoginView(View):
@@ -85,3 +86,20 @@ class LoginVerifyView(View):
 
         form.add_error('otp','Invalid Otp')
         return render(request, self.template_name, {'form': form})
+
+
+
+class CompleteRegisterView(LoginRequiredMixin, View):
+    form_class = UserRegisterForm
+    template_name = 'accounts/register.html'
+
+    def get(self, request):
+        form = self.form_class(instance=request.user)
+        return render(request, self.template_name, {'form': form})
+
+    def post(self, request):
+        form = self.form_class(request.POST, instance=request.user)
+        if not form.is_valid():
+            return render(request, self.template_name, {'form': form})
+        form.save()
+        return redirect('home')
