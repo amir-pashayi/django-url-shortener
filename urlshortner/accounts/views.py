@@ -103,3 +103,9 @@ class CompleteRegisterView(LoginRequiredMixin, View):
             return render(request, self.template_name, {'form': form})
         form.save()
         return redirect('home')
+
+
+class LogoutView(LoginRequiredMixin, View):
+    def get(self, request):
+        logout(request)
+        return redirect('home')
