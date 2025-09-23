@@ -6,6 +6,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils import timezone
 from datetime import timedelta
 from django.shortcuts import get_object_or_404
+from django.http import Http404
+from django.db.models import F
 
 
 
@@ -51,3 +53,12 @@ class LinkDetailView(LoginRequiredMixin, View):
     def get(self, request, code):
         link = get_object_or_404(ShortLink, code=code, owner=request.user)
         return render(request, self.template_name, {"link": link})
+
+
+class GoView(View):
+    def get(self, request, code):
+        link = get_object_or_404(ShortLink, code=code, is_active=True)
+        if link.expires_at and timezone.now() > link.expires_at:
+            raise Http404("Link expired")
+        ShortLink.objects.filter(pk=link.pk).update(click_count=F('click_count') + 1)
+        return redirect(link.original_url)
