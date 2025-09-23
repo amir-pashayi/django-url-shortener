@@ -6,4 +6,5 @@ urlpatterns = [
     path('verify/', views.LoginVerifyView.as_view(), name='verify'),
     path('complete-register/', views.CompleteRegisterView.as_view(), name='complete-register'),
     path("logout/", views.LogoutView.as_view(), name="logout"),
+    path('dashboard/', views.DashboardView.as_view(), name='dashboard'),
 ]

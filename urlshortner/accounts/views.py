@@ -7,6 +7,8 @@ from .services import send_otp_code
 from django.conf import settings
 from django.contrib.auth import login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
+from shortener.models import ShortLink
+from django.views.generic import ListView
 
 
 class LoginView(View):
@@ -109,3 +111,14 @@ class LogoutView(LoginRequiredMixin, View):
     def get(self, request):
         logout(request)
         return redirect('home')
+
+
+
+class DashboardView(LoginRequiredMixin, ListView):
+    model = ShortLink
+    template_name = "accounts/dashboard.html"
+    context_object_name = "links"
+    paginate_by = 10
+
+    def get_queryset(self):
+        return ShortLink.objects.filter(owner=self.request.user).order_by("-created_at")
