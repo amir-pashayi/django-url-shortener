@@ -15,6 +15,13 @@ class LoginView(View):
     form_class = UserLoginRegisterForm
     template_name = 'accounts/login.html'
 
+
+    def dispatch(self, request, *args, **kwargs):
+        nxt = request.GET.get('next')
+        if nxt:
+            request.session['next'] = nxt
+        return super().dispatch(request, *args, **kwargs)
+
     def get(self, request):
         form = self.form_class()
         return render(request, self.template_name, {'form': form})
@@ -84,7 +91,8 @@ class LoginVerifyView(View):
                 return redirect('complete-register')
 
             login(request, user)
-            return redirect('home')
+            next_url = request.session.pop('next', None)
+            return redirect(next_url or 'home')
 
         form.add_error('otp','Invalid Otp')
         return render(request, self.template_name, {'form': form})
