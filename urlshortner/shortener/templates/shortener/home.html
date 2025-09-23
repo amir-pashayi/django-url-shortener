@@ -1,17 +1,44 @@
-
 {% extends "base.html" %}
 
 {% block title %}Home{% endblock %}
 
 {% block content %}
 <div class="row justify-content-center">
-    <div class="col-md-6">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <h4 class="card-title mb-3 text-center">🔗 Shorten your link</h4>
+  <div class="col-md-8">
+    <div class="card shadow-sm border-0">
+      <div class="card-body text-center">
+        <h3 class="card-title mb-3">🔗 Welcome to URL Shortener</h3>
+        <p class="text-muted mb-4">
+          Paste a long URL, get a short one you can share anywhere.
+        </p>
 
-            </div>
-        </div>
+        {% if user.is_authenticated %}
+          <a href="{% url 'link_create' %}" class="btn btn-primary mb-3">
+            ➕ Create a New Link
+          </a>
+
+          <h5 class="mt-4">Your recent links</h5>
+          {% if links %}
+            <ul class="list-group text-start">
+              {% for link in links %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                  <div>
+                    <a href="{% url 'link_detail' link.code %}">{{ request.build_absolute_uri }}{{ link.code }}/</a>
+                    <br>
+                    <small class="text-muted">{{ link.original_url|truncatechars:50 }}</small>
+                  </div>
+                  <span class="badge bg-secondary">{{ link.click_count }} clicks</span>
+                </li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p class="text-muted mt-2">You haven't created any links yet.</p>
+          {% endif %}
+        {% else %}
+          <a href="{% url 'login' %}" class="btn btn-success">Login / Register to start</a>
+        {% endif %}
+      </div>
     </div>
+  </div>
 </div>
 {% endblock %}

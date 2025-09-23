@@ -1,7 +1,8 @@
 from django.db import models
 from accounts.models import User
 from django.utils import timezone
-import secrets, string
+import string, secrets
+
 
 CHARSET = string.ascii_letters + string.digits
 
@@ -27,8 +28,12 @@ class ShortLink(models.Model):
         return f"{self.code} -> {self.original_url}"
 
     @staticmethod
-    def generate_code(length=6):
-        return ''.join(secrets.choice(CHARSET) for _ in range(length))
+    def generate_unique_code(length=6):
+        charset = string.ascii_letters + string.digits
+        while True:
+            code = ''.join(secrets.choice(charset) for _ in range(length))
+            if not ShortLink.objects.filter(code=code).exists():
+                return code
 
     def is_expired(self):
         return bool(self.expires_at and timezone.now() > self.expires_at)
