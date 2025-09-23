@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}Link Details{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-7">
+    <div class="card shadow-sm border-0">
+      <div class="card-body">
+        <h4 class="card-title mb-3">🔗 Link Details</h4>
+
+        <p><strong>Short URL:</strong>
+          <a href="/{{ link.code }}/" target="_blank">
+            {{ link.code }}/
+          </a>
+        </p>
+
+        <p><strong>Original URL:</strong>
+          <a href="{{ link.original_url }}" target="_blank">{{ link.original_url }}</a>
+        </p>
+
+        <p><strong>Clicks:</strong> {{ link.click_count }}</p>
+        <p><strong>Created at:</strong> {{ link.created_at|date:"Y-m-d H:i" }}</p>
+        <p><strong>Expires at:</strong>
+          {% if link.expires_at %}
+            {{ link.expires_at|date:"Y-m-d H:i" }}
+          {% else %}
+            Never
+          {% endif %}
+        </p>
+
+        <div class="mt-4">
+          <a href="{% url 'link_create' %}" class="btn btn-primary">Create another link</a>
+          <a href="{% url 'home' %}" class="btn btn-outline-secondary">Back to Home</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
