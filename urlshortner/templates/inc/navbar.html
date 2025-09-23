@@ -1,5 +1,28 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
-        <div class="container">
-            <a class="navbar-brand" href="{% url 'home' %}">🔗 Home</a>
-        </div>
+  <div class="container">
+    <a class="navbar-brand" href="{% url 'home' %}">🔗 Home</a>
+
+    <div class="collapse navbar-collapse">
+      <ul class="navbar-nav ms-auto align-items-center">
+        {% if user.is_authenticated %}
+          <li class="nav-item">
+            <a class="nav-link text-white" href="#" tabindex="-1" aria-disabled="true">
+              👤 {{ user.full_name|default:user.phone }}
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="btn btn-sm btn-outline-light ms-2 px-3 logout-btn" href="{% url 'logout' %}">
+              Logout
+            </a>
+          </li>
+        {% else %}
+          <li class="nav-item">
+            <a class="btn btn-sm btn-primary px-3" href="{% url 'login' %}">
+              Login / Register
+            </a>
+          </li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
 </nav>
