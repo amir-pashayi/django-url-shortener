@@ -3,7 +3,12 @@ from kavenegar import *
 
 def send_otp_code(phone_number, code):
 	try:
-		api = KavenegarAPI(settings.KAVENEGAR_API_KEY)
+		api_key = settings.KAVENEGAR_API_KEY
+		if getattr(settings, "DEBUG", False) or not api_key:
+			print(f"[OTP][DEV] to={phone_number} code={code}")
+			return True
+
+		api = KavenegarAPI(api_key)
 		params = {
 			'receptor': phone_number,
             'template': 'django-ec',
