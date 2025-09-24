@@ -8,6 +8,7 @@ from datetime import timedelta
 from django.shortcuts import get_object_or_404
 from django.http import Http404
 from django.db.models import F
+from django.db import IntegrityError, transaction
 
 
 
@@ -36,14 +37,19 @@ class CreateShortLinkView(LoginRequiredMixin, View):
             original_url = cd['original_url']
             code = ShortLink.generate_unique_code()
             expires_at = timezone.now() + timedelta(days=365)
-            link = ShortLink.objects.create(
-                owner=request.user,
-                original_url=original_url,
-                code=code,
-                expires_at=expires_at,
-            )
+            try:
+                with transaction.atomic():
+                    link = ShortLink.objects.create(
+                        owner=request.user,
+                        original_url=original_url,
+                        code=code,
+                        expires_at=expires_at,
+                    )
+                return redirect("link_detail", code=link.code)
+            except IntegrityError:
+                form.add_error(None, "Something went wrong. Please try again.")
+                return render(request, self.template_name, {"form": form})
 
-            return redirect("link_detail", code=link.code)
 
 
 
@@ -62,3 +68,12 @@ class GoView(View):
             raise Http404("Link expired")
         ShortLink.objects.filter(pk=link.pk).update(click_count=F('click_count') + 1)
         return redirect(link.original_url)
+
+
+
+class LinkToggleActiveView(LoginRequiredMixin, View):
+    def post(self, request, code):
+        link = get_object_or_404(ShortLink, code=code, owner=request.user)
+        link.is_active = not link.is_active
+        link.save(update_fields=['is_active'])
+        return redirect('link_detail', code=link.code)

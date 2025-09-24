@@ -3,37 +3,47 @@
 {% block title %}Link Details{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-  <div class="col-md-7">
-    <div class="card shadow-sm border-0">
-      <div class="card-body">
-        <h4 class="card-title mb-3">🔗 Link Details</h4>
+<div class="col-md-7 mx-auto">
+  <div class="card border-0 shadow-sm">
+    <div class="card-body">
+      <h5 class="mb-3">Link</h5>
 
-        <p><strong>Short URL:</strong>
-          <a href="/{{ link.code }}/" target="_blank">
-            {{ link.code }}/
-          </a>
-        </p>
+      {% url 'go' link.code as go_url %}
 
-        <p><strong>Original URL:</strong>
-          <a href="{{ link.original_url }}" target="_blank">{{ link.original_url }}</a>
-        </p>
+      <p class="mb-2">
+        <span class="fw-semibold">Short URL:</span>
+        <a href="{{ go_url }}" target="_blank" rel="noopener noreferrer nofollow">
+          {{ request.scheme }}://{{ request.get_host }}{{ go_url }}
+        </a>
+        <button type="button" class="btn btn-sm btn-outline-primary ms-2"
+                onclick="(async(b=>{const t=b.innerText;b.disabled=1;try{await navigator.clipboard.writeText('{{ request.scheme }}://{{ request.get_host }}{{ go_url }}');b.innerText='Copied!';setTimeout(()=>{b.innerText=t;b.disabled=0},1000)}catch(e){b.disabled=0;alert('Copy failed.')}}))(this)">
+          Copy
+        </button>
+      </p>
 
-        <p><strong>Clicks:</strong> {{ link.click_count }}</p>
-        <p><strong>Created at:</strong> {{ link.created_at|date:"Y-m-d H:i" }}</p>
-        <p><strong>Expires at:</strong>
-          {% if link.expires_at %}
-            {{ link.expires_at|date:"Y-m-d H:i" }}
-          {% else %}
-            Never
-          {% endif %}
-        </p>
+      <p class="mb-2">
+        <span class="fw-semibold">Original URL:</span>
+        <a href="{{ link.original_url }}" target="_blank" rel="noopener noreferrer nofollow">
+          {{ link.original_url }}
+        </a>
+      </p>
 
-        <div class="mt-4">
-          <a href="{% url 'link_create' %}" class="btn btn-primary">Create another link</a>
-          <a href="{% url 'home' %}" class="btn btn-outline-secondary">Back to Home</a>
-        </div>
-      </div>
+      <p class="mb-2"><span class="fw-semibold">Clicks:</span> {{ link.click_count }}</p>
+
+      <p class="mb-4">
+        <span class="fw-semibold">Expires at:</span>
+        {% if link.expires_at %}{{ link.expires_at|date:"Y-m-d H:i" }}{% else %}Never{% endif %}
+      </p>
+
+      <form method="post" action="{% url 'link_toggle' link.code %}" class="d-inline">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-outline-warning btn-sm">
+          {% if link.is_active %}Deactivate{% else %}Activate{% endif %}
+        </button>
+      </form>
+
+      <a href="{% url 'link_create' %}" class="btn btn-primary btn-sm">Create another</a>
+      <a href="{% url 'home' %}" class="btn btn-outline-secondary btn-sm">Back</a>
     </div>
   </div>
 </div>
