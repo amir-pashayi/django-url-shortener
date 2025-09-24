@@ -46,8 +46,13 @@ class LoginView(View):
             request.session['login_info'] = {
                 'phone': phone,
             }
-            send_otp_code(phone, otp.code)
-            return redirect('verify')
+
+            ok = send_otp_code(phone, otp.code)
+            if ok:
+                return redirect("verify_otp")
+            else:
+                form.add_error(None, "Something went wrong! please try again later.")
+                return render(request, self.template_name, {"form": form})
         return render(request, self.template_name, {'form': form})
 
 

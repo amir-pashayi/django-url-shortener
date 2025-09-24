@@ -10,7 +10,8 @@ def send_otp_code(phone_number, code):
             'token': code,
 		}
 		api.verify_lookup(params)
-	except APIException as e:
-		print(e)
-	except HTTPException as e:
-		print(e)
+		return True
+
+	except (APIException, HTTPException) as e:
+		print(f"[OTP][ERR] provider_error={e} phone={phone_number}")
+		return False
