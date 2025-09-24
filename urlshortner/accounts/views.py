@@ -35,11 +35,15 @@ class LoginView(View):
             phone = form.cleaned_data['phone']
 
             phone_key = f"otp:req:{phone}"
+            window = getattr(settings, "OTP_ATTEMPT_WINDOW", 300)
+            max_reqs = getattr(settings, "OTP_REQUESTS_PER_WINDOW", 5)
+
             count = cache.get(phone_key, 0)
-            if count >= 5:
+            if count >= max_reqs:
                 form.add_error('phone', "Too many requests. Please try again later.")
                 return render(request, self.template_name, {'form': form})
-            cache.set(phone_key, count + 1, timeout=300)
+
+            cache.set(phone_key, count + 1, timeout=window)
 
             cooldown = getattr(settings, "OTP_RESEND_COOLDOWN", 120)
             otp = OTP.objects.filter(phone=phone).first()
