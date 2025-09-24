@@ -5,6 +5,14 @@ import string, secrets
 
 
 CHARSET = string.ascii_letters + string.digits
+RESERVED_CODES = {
+    "admin", "login", "logout", "signup", "register",
+    "accounts", "user", "profile", "settings",
+    "api", "v1", "v2",
+    "static", "media", "assets",
+    "docs", "help", "dashboard", "home",
+}
+
 
 class ShortLink(models.Model):
     owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='links')
@@ -32,6 +40,8 @@ class ShortLink(models.Model):
         charset = string.ascii_letters + string.digits
         while True:
             code = ''.join(secrets.choice(charset) for _ in range(length))
+            if code.lower() in RESERVED_CODES:
+                continue
             if not ShortLink.objects.filter(code=code).exists():
                 return code
 
