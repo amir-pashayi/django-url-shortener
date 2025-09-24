@@ -9,6 +9,7 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from shortener.models import ShortLink
 from django.views.generic import ListView
+from django.core.cache import cache
 
 
 class LoginView(View):
@@ -32,6 +33,13 @@ class LoginView(View):
 
         if form.is_valid():
             phone = form.cleaned_data['phone']
+
+            phone_key = f"otp:req:{phone}"
+            count = cache.get(phone_key, 0)
+            if count >= 5:
+                form.add_error('phone', "Too many requests. Please try again later.")
+                return render(request, self.template_name, {'form': form})
+            cache.set(phone_key, count + 1, timeout=300)
 
             cooldown = getattr(settings, "OTP_RESEND_COOLDOWN", 120)
             otp = OTP.objects.filter(phone=phone).first()
