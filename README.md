@@ -142,4 +142,4 @@ On development, with `DEBUG=True` or no `KAVENEGAR_API_KEY`, OTPs are **printed 
 ---
 ## ❤️ Credits
 
-Developed with ❤️ by **Amir Pashayi**
+Developed with ❤️ and ☕ by **Amir Pashayi**
